@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+torch = ">=1.0.0"
+torchvision = "*"
+dominate = ">=2.3.1"
+dill = "*"
+scikit-image = "*"
+jupyter = "*"
+flask = "*"
+flask-socketio = "*"
+flask-cors = "*"
+requests = "*"
+opencv-python = "*"
+
+[requires]
+python_version = "3.7"

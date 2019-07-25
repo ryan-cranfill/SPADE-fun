@@ -32,6 +32,8 @@ This code requires PyTorch 1.0 and python 3+. Please install dependencies by
 pip install -r requirements.txt
 ```
 
+*_TKTK add instructions for frontend and server stuff here_* 
+
 This code also requires the Synchronized-BatchNorm-PyTorch rep.
 ```
 cd models/networks/
