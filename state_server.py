@@ -18,6 +18,8 @@ def get_instance_vec(noise_vec):
 
 
 class StateManager:
+    max_cls = 100
+
     def __init__(self, dim=256):
         self.dim = dim
         self.col = 0
@@ -25,6 +27,7 @@ class StateManager:
         self.row = 8
         self.a, self.b = 32, 41
         self.label_map, self.instance_map = self.generate_noise()
+        self.process_label_data()
 
     def generate_noise(self, dim=None):
         if dim is None:
@@ -55,10 +58,10 @@ class StateManager:
         if low <= 0:
             # print(low, high, middle)
             self.a += 1
-            if self.a > 187:
+            if self.a > self.max_cls:
                 self.a = 0
                 self.b += 1
-                if self.b > 187:
+                if self.b > self.max_cls:
                     self.b = 0
             self.col = 0
 
@@ -72,14 +75,22 @@ class StateManager:
 
     def process_label_data(self, label_data=None):
         if not label_data or 'label_map' not in label_data:
-            self.label_map, self.instance_map = self.generate_noise()
+            pass
+            # self.label_map, self.instance_map = self.generate_noise()
         else:
-            # todo: convert to numpy array?
-            self.label_map = label_data.get('label_map')
+            raw_arr = np.array(label_data.get('label_map'))
+            if raw_arr.shape[0] != self.dim:
+                mult_by = self.dim / raw_arr.shape[0]
+                full_size = raw_arr.repeat(mult_by, axis=0).repeat(mult_by, axis=1)
+            else:
+                full_size = raw_arr
+            full_size = np.where(full_size == 0, 12, 4)
+
+            self.label_map = full_size
             self.instance_map = get_instance_vec(self.label_map)
 
     def get_state_dict(self):
-        self.process_label_data()
+        # self.process_label_data()
         return dict(
             dim=self.dim,
             label_map=self.label_map.tolist(),
@@ -99,8 +110,8 @@ def handle_test():
 
 @socketio.on('new-label')
 def update_label(label_data=None):
-    # if not label_data:
-    #     return
+    if not label_data:
+        return
 
     global manager
     manager.process_label_data(label_data)
